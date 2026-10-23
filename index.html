@@ -1,85 +1,178 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>پخش ایران زمین</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Tahoma, sans-serif;
-      background: #f4f6fa;
-      color: #17233b;
-      text-align: center;
-    }
-    header {
-      background: #101d38;
-      color: #d8b66a;
-      padding: 35px 15px;
-    }
-    h1 { margin: 0 0 12px; }
-    main { padding: 35px 18px; }
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 3px 15px #0001;
-    }
-    button {
-      background: #d8b66a;
-      border: 0;
-      border-radius: 10px;
-      padding: 14px 25px;
-      font-size: 16px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>پخش ایران زمین | فروش عمده</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Tahoma,sans-serif;
+ background:#080e19;
+ color:white;
+}
+header{
+ background:linear-gradient(135deg,#080e19,#19283e);
+ padding:25px 15px;
+ text-align:center;
+ border-bottom:2px solid #d4af37;
+}
+.logo{
+ color:#e8c66b;
+ font-size:30px;
+ font-weight:bold;
+}
+.gold{color:#e8c66b}
+nav{
+ display:flex;
+ justify-content:center;
+ flex-wrap:wrap;
+ gap:12px;
+ padding:18px;
+ background:#111b2c;
+}
+nav a{
+ color:#e8c66b;
+ text-decoration:none;
+ font-size:14px;
+}
+.hero{
+ min-height:280px;
+ padding:55px 20px;
+ text-align:center;
+ background:
+ linear-gradient(#07101c99,#07101cee),
+ linear-gradient(135deg,#192b49,#070b13);
+}
+.hero h1{
+ color:#e8c66b;
+ font-size:30px;
+}
+.btn{
+ display:inline-block;
+ background:#d4af37;
+ color:#111;
+ border:0;
+ border-radius:10px;
+ padding:13px 22px;
+ margin:8px;
+ font-weight:bold;
+ text-decoration:none;
+ cursor:pointer;
+}
+section{
+ max-width:1100px;
+ margin:auto;
+ padding:25px 15px;
+}
+h2{color:#e8c66b}
+input{
+ width:100%;
+ padding:15px;
+ border-radius:10px;
+ border:1px solid #c9a74a;
+ background:#172338;
+ color:white;
+ font-size:16px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+ gap:16px;
+ margin-top:22px;
+}
+.card{
+ background:#152135;
+ border:1px solid #a78b43;
+ border-radius:15px;
+ padding:20px;
+ text-align:center;
+}
+.card h3{color:#f1d27c}
+.price{
+ color:#e8c66b;
+ font-weight:bold;
+ font-size:19px;
+}
+footer{
+ text-align:center;
+ background:#080b12;
+ padding:30px;
+ border-top:1px solid #d4af37;
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>پخش ایران زمین</h1>
-    <p>فروش عمده مواد غذایی و تنقلات</p>
-  </header>
 
-  <main>
-    <div class="card">
-      <h2>به فروشگاه ایران زمین خوش آمدید</h2>
-      <p>انواع نوشیدنی، چیپس، پفک، شکلات و محصولات سوپرمارکتی</p>
-      <h2>محصولات پخش ایران زمین</h2>
+<header>
+ <div class="logo">👑 پخش ایران زمین</div>
+ <p>مرجع فروش عمده محصولات سوپرمارکتی</p>
+</header>
 
-<div id="products">
-    </div>
-  </main>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<nav>
+ <a href="#home">خانه</a>
+ <a href="#products">محصولات</a>
+ <a href="#contact">ارتباط با ما</a>
+</nav>
+
+<div class="hero" id="home">
+ <h1>پخش عمده ایران زمین</h1>
+ <p>تأمین محصولات سوپرمارکتی با قیمت همکاری</p>
+ <p class="gold">کیفیت بالا • قیمت مناسب • سفارش آسان</p>
+ <a class="btn" href="#products">مشاهده محصولات</a>
+</div>
+
+<section id="products">
+ <h2>🛒 محصولات ایران زمین</h2>
+ <input
+  id="search"
+  placeholder="🔎 جست‌وجوی محصولات..."
+  oninput="filterProducts()"
+ >
+ <div class="grid" id="productList"></div>
+</section>
+
+<section id="contact">
+ <h2>📞 ثبت سفارش</h2>
+ <p>برای سفارش عمده با پخش ایران زمین ارتباط بگیرید.</p>
+ <p>شماره تماس و واتساپ به‌زودی اضافه می‌شود.</p>
+</section>
+
+<footer>
+ <h3 class="gold">پخش ایران زمین</h3>
+ <p>همراه مطمئن فروشگاه‌ها و سوپرمارکت‌ها</p>
+</footer>
+
 <script>
-  const SUPABASE_URL = "https://zpzgobwtmihmxguaugjd.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_77wkgLWrbGoPeH9K-cCP_w_00P2HNEZ";
-  const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-  async function loadProducts() {
-  const { data, error } = await db
-    .from('products')
-    .select('name, price, unit')
-    .eq('is_active', true);
+const products=[
+ {name:"نوشیدنی انرژی‌زا هایپ",unit:"کارتن ۲۴ عددی",price:2800000},
+ {name:"نوشیدنی رانی",unit:"کارتن ۲۴ عددی",price:1830000},
+ {name:"پفک چی‌توز",unit:"کارتن ۲۰ عددی",price:1520000},
+ {name:"چیپس مزمز",unit:"کارتن ۴۰ عددی",price:null}
+];
 
-  if (error) {
-    console.error('Error loading products:', error);
-    return;
-  }
-
-  const container = document.getElementById('products');
-
-container.innerHTML = data.map(product => `
-  <div class="card">
-    <h3>${product.name}</h3>
-    <p>${product.unit || ''}</p>
-    <strong>${Number(product.price).toLocaleString('fa-IR')} تومان</strong>
-  </div>
-`).join('');
+function showProducts(items){
+ document.getElementById("productList").innerHTML=
+ items.map(p=>`
+ <div class="card">
+  <h3>${p.name}</h3>
+  <p>${p.unit}</p>
+  <p class="price">${
+   p.price===null
+   ?"قیمت در حال به‌روزرسانی"
+   :p.price.toLocaleString("fa-IR")+" تومان"
+  }</p>
+ </div>
+ `).join("");
 }
 
-loadProducts();
+function filterProducts(){
+ const q=document.getElementById("search").value;
+ showProducts(products.filter(p=>p.name.includes(q)));
+}
+
+showProducts(products);
 </script>
 </body>
 </html>
