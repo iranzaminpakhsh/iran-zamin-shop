@@ -79,6 +79,21 @@
     SUPABASE_URL,
     SUPABASE_KEY
   );
+  async function loadProducts() {
+  const { data, error } = await db
+    .from('products')
+    .select('name, price, unit')
+    .eq('is_active', true);
+
+  if (error) {
+    console.error('Error loading products:', error);
+    return;
+  }
+
+  console.log('Products:', data);
+}
+
+loadProducts();
 </script>
 </body>
 </html>
