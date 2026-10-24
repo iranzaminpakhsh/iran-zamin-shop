@@ -151,13 +151,29 @@ footer{
 </footer>
 
 <script>
-const products=[
- {name:"نوشیدنی انرژی‌زا هایپ",unit:"کارتن ۲۴ عددی",price:2800000},
- {name:"نوشیدنی رانی",unit:"کارتن ۲۴ عددی",price:1830000},
- {name:"پفک چی‌توز",unit:"کارتن ۲۰ عددی",price:1520000},
- {name:"چیپس مزمز",unit:"کارتن ۴۰ عددی",price:null}
-];
+let products = [];
 
+async function loadProducts() {
+  try {
+    const response = await fetch(
+      "https://zpzgobwtmihmxguaugjd.supabase.co/rest/v1/products?select=name,price,unit&is_active=eq.true",
+      {
+        headers: {
+          apikey: "sb_publishable_77wkgLWrbGoPeH9K-cCP_w_00P2HNEZ"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("خطا در دریافت محصولات");
+    }
+
+    products = await response.json();
+    showProducts(products);
+  } catch (error) {
+    console.error(error);
+  }
+}
 function showProducts(items){
  document.getElementById("productList").innerHTML=
  items.map(p=>`
@@ -178,7 +194,7 @@ function filterProducts(){
  showProducts(products.filter(p=>p.name.includes(q)));
 }
 
-showProducts(products);
+loadProducts();
 </script>
 </body>
 </html>
