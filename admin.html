@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>مدیریت | پخش ایران زمین</title>
+  <style>
+    body{margin:0;background:#080e19;color:white;font-family:tahoma,sans-serif;padding:20px}
+    main{max-width:900px;margin:auto}
+    h1{color:#e8c66b}
+    .box{background:#152135;border:1px solid #5c4b2b;border-radius:14px;padding:18px;margin:18px 0}
+    input,button{box-sizing:border-box;width:100%;padding:13px;margin:7px 0;border-radius:9px;font-size:15px}
+    input{background:#fff;border:0}
+    button{background:#d4af37;color:#111;border:0;font-weight:bold;cursor:pointer}
+    .secondary{background:#263750;color:white}
+    .order{border-bottom:1px solid #43516a;padding:14px 0;line-height:2;overflow-wrap:anywhere}
+    .muted{color:#bac4d4}
+    .error{color:#ffaaa7}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+<main>
+  <h1>👑 مدیریت پخش ایران زمین</h1>
+
+  <section id="loginBox" class="box">
+    <h2>🔐 ورود مدیر</h2>
+    <input id="email" type="email" placeholder="ایمیل مدیر" autocomplete="username">
+    <input id="password" type="password" placeholder="رمز عبور" autocomplete="current-password">
+    <button id="loginBtn">ورود</button>
+  </section>
+
+  <section id="dashboard" hidden>
+    <div class="box">
+      <h2>📦 سفارش‌های مشتریان</h2>
+      <button id="refreshBtn">🔄 به‌روزرسانی سفارش‌ها</button>
+      <button id="logoutBtn" class="secondary">خروج از حساب</button>
+      <div id="orders"></div>
+    </div>
+  </section>
+
+  <p id="message" class="muted"></p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://zpzgobwtmihmxguaugjd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_77wkgLWrbGoPeH9K-cCP_w_00P2HNEZ";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = id => document.getElementById(id);
+const msg = (text, error=false) => {
+  $("message").textContent = text;
+  $("message").className = error ? "error" : "muted";
+};
+
+function showLogin(){
+  $("loginBox").hidden = false;
+  $("dashboard").hidden = true;
+}
+
+async function checkAdmin(){
+  const {data:{user},error} = await db.auth.getUser();
+  if(error || !user) return false;
+
+  const result = await db.from("admins")
+    .select("user_id")
+    .eq("user_id",user.id)
+    .maybeSingle();
+
+  return !result.error && !!result.data;
+}
+
+async function loadOrders(){
+  msg("در حال دریافت سفارش‌ها...");
+  const {data,error} = await db.from("orders")
+    .select("id,customer_name,phone,address,total_price,status,created_at")
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  if(error){
+    msg("خطا در دریافت سفارش‌ها: "+error.message,true);
+    return;
+  }
+
+  const box = $("orders");
+  box.replaceChildren();
+
+  if(!data.length){
+    box.textContent = "هنوز سفارشی ثبت نشده است.";
+  }
+
+  for(const order of data){
+    const div = document.createElement("div");
+    div.className = "order";
+
+    const fields = [
+      ["شماره سفارش",order.id],
+      ["مشتری",order.customer_name],
+      ["تلفن",order.phone],
+      ["آدرس",order.address],
+      ["مبلغ",Number(order.total_price || 0).toLocaleString("fa-IR")+" تومان"],
+      ["وضعیت",order.status],
+      ["تاریخ",order.created_at ? new Date(order.created_at).toLocaleString("fa-IR") : ""]
+    ];
+
+    for(const [label,value] of fields){
+      const line = document.createElement("div");
+      line.textContent = label+" : "+(value ?? "");
+      div.appendChild(line);
+    }
+
+    box.appendChild(div);
+  }
+  msg("سفارش‌ها به‌روزرسانی شدند.");
+}
+
+async function openDashboard(){
+  if(!(await checkAdmin())){
+    showLogin();
+    msg("این حساب دسترسی مدیریت ندارد.",true);
+    return;
+  }
+  $("loginBox").hidden = true;
+  $("dashboard").hidden = false;
+  await loadOrders();
+}
+
+$("loginBtn").onclick = async () => {
+  msg("در حال بررسی اطلاعات...");
+  const {error} = await db.auth.signInWithPassword({
+    email:$("email").value.trim(),
+    password:$("password").value
+  });
+
+  if(error){
+    msg("ورود ناموفق بود. ایمیل و رمز عبور را بررسی کن.",true);
+    return;
+  }
+  $("password").value = "";
+  await openDashboard();
+};
+
+$("refreshBtn").onclick = loadOrders;
+
+$("logoutBtn").onclick = async () => {
+  await db.auth.signOut();
+  showLogin();
+  msg("از حساب خارج شدی.");
+};
+
+(async()=>{
+  const {data:{session}} = await db.auth.getSession();
+  if(session) await openDashboard();
+  else showLogin();
+})();
+</script>
+</body>
+</html>
