@@ -263,7 +263,7 @@ function removeFromCart(id) {
   cart = cart.filter(item => Number(item.id) !== Number(id));
   updateCart();
  }
- function showCheckout() {
+ async function showCheckout() {
   if (cart.length === 0) {
     alert("سبد خرید شما خالی است.");
     return;
@@ -283,13 +283,47 @@ function removeFromCart(id) {
 
   const notes = prompt("توضیحات سفارش (اختیاری):") || "";
 
-  alert(
-    "اطلاعات سفارش دریافت شد.\n" +
-    "مشتری: " + customerName + "\n" +
-    "تلفن: " + phone + "\n" +
-    "آدرس: " + address + "\n\n" +
-    "توجه: سفارش هنوز نهایی و ثبت نشده است."
-  );
+  const total = cart.reduce(
+  (sum, item) => sum + Number(item.price) * item.quantity, 0
+);
+
+const { data: order, error: orderError } = await db
+  .from("orders")
+  .insert({
+    customer_name: customerName.trim(),
+    store_name: customerName.trim(),
+    phone: phone.trim(),
+    address: address.trim(),
+    notes: notes.trim(),
+    total_price: total,
+    status: "pending"
+  })
+  .select("id")
+  .single();
+
+if (orderError) {
+  alert("خطا در ثبت سفارش: " + orderError.message);
+  return;
+}
+
+const { error: itemsError } = await db
+  .from("order_items")
+  .insert(cart.map(item => ({
+    order_id: order.id,
+    product_id: item.id,
+    product_name: item.name,
+    quantity: item.quantity,
+    unit_price: Number(item.price)
+  })));
+
+if (itemsError) {
+  alert("سفارش ایجاد شد، اما اقلام کامل ثبت نشدند. با پشتیبانی تماس بگیرید.");
+  return;
+}
+
+alert("سفارش شما با موفقیت ثبت شد. شماره سفارش: " + order.id);
+cart = [];
+updateCart();
  }                                  
 loadProducts();
 </script>
