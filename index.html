@@ -157,10 +157,17 @@ footer{
  <h3 class="gold">پخش ایران زمین</h3>
  <p>همراه مطمئن فروشگاه‌ها و سوپرمارکت‌ها</p>
 </footer>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 let products = [];
+const SUPABASE_URL = "https://zpzgobwtmihmxguaugjd.supabase.co";
 
+const SUPABASE_KEY = "sb_publishable_77wkgLWrbGoPeH9K-cCP_w_00P2HNEZ";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 async function loadProducts() {
   try {
     const response = await fetch(
