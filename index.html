@@ -294,39 +294,29 @@ function removeFromCart(id) {
   (sum, item) => sum + Number(item.price) * item.quantity, 0
 );
 
-const { data: order, error: orderError } = await db
-  .from("orders")
-  .insert({
-    customer_name: customerName.trim(),
-    store_name: customerName.trim(),
-    phone: phone.trim(),
-    address: address.trim(),
-    notes: notes.trim(),
-    total_price: total,
-    status: "pending"
-  })
-  .select("id")
-  .single();
+const { data: orderId, error: orderError } = await db.rpc(
+  "create_customer_order",
+  {
+    p_customer_name: customerName.trim(),
+    p_store_name: customerName.trim(),
+    p_phone: phone.trim(),
+    p_address: address.trim(),
+    p_notes: notes.trim(),
+    p_items: cart.map(item => ({
+      product_id: Number(item.id),
+      quantity: Number(item.quantity)
+    }))
+  }
+);
 
 if (orderError) {
   alert("خطا در ثبت سفارش: " + orderError.message);
   return;
 }
 
-const { error: itemsError } = await db
-  .from("order_items")
-  .insert(cart.map(item => ({
-    order_id: order.id,
-    product_id: item.id,
-    product_name: item.name,
-    quantity: item.quantity,
-    unit_price: Number(item.price)
-  })));
-
-if (itemsError) {
-  alert("سفارش ایجاد شد، اما اقلام کامل ثبت نشدند. با پشتیبانی تماس بگیرید.");
-  return;
-}
+alert("سفارش شما با موفقیت ثبت شد. شماره سفارش: " + orderId);
+cart = [];
+updateCart();
 
 alert("سفارش شما با موفقیت ثبت شد. شماره سفارش: " + order.id);
 cart = [];
