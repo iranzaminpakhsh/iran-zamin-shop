@@ -109,7 +109,25 @@ async function loadOrders(){
       line.textContent = label+" : "+(value ?? "");
       div.appendChild(line);
     }
+const itemsTitle = document.createElement("div");
+itemsTitle.textContent = "📦 محصولات سفارش:";
+itemsTitle.style.marginTop = "15px";
+itemsTitle.style.fontWeight = "bold";
+div.appendChild(itemsTitle);
 
+for (const item of (order.order_items || [])) {
+  const itemLine = document.createElement("div");
+
+  itemLine.textContent =
+    "• " + item.product_name +
+    " | تعداد: " + item.quantity +
+    " | قیمت واحد: " +
+    Number(item.unit_price || 0).toLocaleString("fa-IR") +
+    " تومان";
+
+  itemLine.style.padding = "6px";
+  div.appendChild(itemLine);
+  }
     box.appendChild(div);
   }
   msg("سفارش‌ها به‌روزرسانی شدند.");
